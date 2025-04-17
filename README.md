@@ -15,19 +15,24 @@
 Before setting up the project, ensure you have the following installed:
 - Git
 - Postman (optional, but recommended for API testing)
+- Python 3.8+
 
 ## Getting Started
 
 ### 1. Clone the Repository
 
 ```bash
-git clone <repository-url>
-cd budget-tracker
+git clone https://github.com/diasmashikov/budgeta-backend.git
+cd budgeta-tracker
 ```
 
-### 2. Start the Application
+### 2. Install necessary libraries
+```bash
+make load-libs # first time only
+```
 
-The project uses Docker for easy setup and consistent development environments:
+
+### 3. Start the Application
 
 ```bash
 # Build and start the application
