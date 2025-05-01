@@ -21,7 +21,7 @@ def generate_token(user_id):
     payload = {
         'exp': now + timedelta(seconds=current_app.config['JWT_ACCESS_TOKEN_EXPIRES']),
         'iat': now,
-        'sub': user_id
+        'sub': str(user_id)
     }
     return jwt.encode(
         payload,

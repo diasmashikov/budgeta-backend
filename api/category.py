@@ -1,14 +1,14 @@
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, g  
 from utils.db import query_db, insert_db, update_db
-from utils.auth import token_required 
-from http import HTTPStatus 
+from utils.auth import login_required 
+from http import HTTPStatus
 
 categories_bp = Blueprint('categories', __name__)
 
 @categories_bp.route('', methods=['GET'])
-@token_required
-def get_categories(current_user):
-    """Get all categories for the current user."""
+@login_required 
+def get_categories(): 
+    current_user = g.user 
     categories = query_db(
         'SELECT category_id, name FROM categories WHERE user_id = ? ORDER BY name',
         (current_user['user_id'],)
@@ -19,9 +19,9 @@ def get_categories(current_user):
     }), HTTPStatus.OK
 
 @categories_bp.route('', methods=['POST'])
-@token_required
-def create_category(current_user):
-    """Create a new category for the current user."""
+@login_required 
+def create_category():
+    current_user = g.user 
     data = request.get_json()
     user_id = current_user['user_id']
 
@@ -33,7 +33,7 @@ def create_category(current_user):
     existing_category = query_db(
         'SELECT category_id FROM categories WHERE user_id = ? AND LOWER(name) = LOWER(?)',
         (user_id, category_name),
-        one=True 
+        one=True
     )
 
     if existing_category:
@@ -55,14 +55,15 @@ def create_category(current_user):
         else:
              return jsonify({'status': 'error', 'message': 'Failed to create category'}), HTTPStatus.INTERNAL_SERVER_ERROR
     except Exception as e:
-        print(f"Error creating category: {e}") 
-        return jsonify({'status': 'error', 'message': 'An internal error occurred'}), HTTPStatus.INTERNAL_SERVER_ERROR
+        print(f"Error creating category for user {user_id}: {e}")
+        return jsonify({'status': 'error', 'message': 'An internal error occurred while creating the category'}), HTTPStatus.INTERNAL_SERVER_ERROR
 
 
 @categories_bp.route('/<int:category_id>', methods=['PUT'])
-@token_required
-def update_category(current_user, category_id):
-    """Update an existing category for the current user."""
+@login_required 
+def update_category(category_id):
+   
+    current_user = g.user 
     data = request.get_json()
     user_id = current_user['user_id']
 
@@ -78,7 +79,7 @@ def update_category(current_user, category_id):
     )
 
     if not category_to_update:
-        return jsonify({'status': 'error', 'message': 'Category not found'}), HTTPStatus.NOT_FOUND
+        return jsonify({'status': 'error', 'message': 'Category not found or access denied'}), HTTPStatus.NOT_FOUND
 
     existing_category = query_db(
         'SELECT category_id FROM categories WHERE user_id = ? AND LOWER(name) = LOWER(?) AND category_id != ?',
@@ -90,26 +91,31 @@ def update_category(current_user, category_id):
         return jsonify({'status': 'error', 'message': 'Another category with this name already exists'}), HTTPStatus.BAD_REQUEST
 
     try:
-        update_db(
+        rows_affected = update_db(
             'UPDATE categories SET name = ? WHERE category_id = ? AND user_id = ?',
             (new_name, category_id, user_id)
         )
-        return jsonify({
-            'status': 'success',
-            'category': {
-                'category_id': category_id,
-                'name': new_name
-            }
-        }), HTTPStatus.OK
+        if rows_affected > 0:
+            return jsonify({
+                'status': 'success',
+                'category': {
+                    'category_id': category_id,
+                    'name': new_name
+                }
+            }), HTTPStatus.OK
+        else:
+            return jsonify({'status': 'error', 'message': 'Category not found or update failed'}), HTTPStatus.NOT_FOUND
     except Exception as e:
-        print(f"Error updating category {category_id}: {e}") 
-        return jsonify({'status': 'error', 'message': 'An internal error occurred'}), HTTPStatus.INTERNAL_SERVER_ERROR
+        print(f"Error updating category {category_id} for user {user_id}: {e}")
+        return jsonify({'status': 'error', 'message': 'An internal error occurred while updating the category'}), HTTPStatus.INTERNAL_SERVER_ERROR
 
 @categories_bp.route('/<int:category_id>', methods=['DELETE'])
-@token_required
-def delete_category(current_user, category_id):
+@login_required 
+def delete_category(category_id):
     """Delete a category for the current user."""
+    current_user = g.user 
     user_id = current_user['user_id']
+
     category_to_delete = query_db(
         'SELECT category_id FROM categories WHERE category_id = ? AND user_id = ?',
         (category_id, user_id),
@@ -117,16 +123,21 @@ def delete_category(current_user, category_id):
     )
 
     if not category_to_delete:
-        return jsonify({'status': 'error', 'message': 'Category not found'}), HTTPStatus.NOT_FOUND
+        return jsonify({'status': 'error', 'message': 'Category not found or access denied'}), HTTPStatus.NOT_FOUND
+
     try:
-        update_db(
+        rows_affected = update_db(
             'DELETE FROM categories WHERE category_id = ? AND user_id = ?',
             (category_id, user_id)
         )
-        return jsonify({
-            'status': 'success',
-            'message': 'Category deleted successfully'
-        }), HTTPStatus.OK
+        if rows_affected > 0:
+            return jsonify({
+                'status': 'success',
+                'message': 'Category deleted successfully'
+            }), HTTPStatus.OK
+        else:
+             return jsonify({'status': 'error', 'message': 'Category not found or delete failed'}), HTTPStatus.NOT_FOUND
+
     except Exception as e:
-        print(f"Error deleting category {category_id}: {e}")
-        return jsonify({'status': 'error', 'message': 'An internal error occurred'}), HTTPStatus.INTERNAL_SERVER_ERROR
+        print(f"Error deleting category {category_id} for user {user_id}: {e}")
+        return jsonify({'status': 'error', 'message': 'An internal error occurred while deleting the category'}), HTTPStatus.INTERNAL_SERVER_ERROR
