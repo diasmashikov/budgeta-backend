@@ -9,6 +9,7 @@
 - [Development Guide](#development-guide)
 - [Database Operations](#database-operations)
 - [Git Workflow](#git-workflow)
+- [For Frontend Developers] (#for-frontend-developers)
 
 ## Prerequisites
 
@@ -255,3 +256,5 @@ git pull origin main
 # Delete your local branch
 git branch -d feature/your-feature-name
 ```
+
+## For Frontend Developers

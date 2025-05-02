@@ -1,7 +1,6 @@
 from dataclasses import dataclass
 from typing import Optional, List
 
-
 # Request DTOs
 @dataclass
 class CreateBudgetRequest:
@@ -10,11 +9,9 @@ class CreateBudgetRequest:
     month: int
     year: int
 
-
 @dataclass
 class UpdateBudgetRequest:
     amount: float
-
 
 # Response DTOs
 @dataclass
@@ -29,7 +26,6 @@ class BudgetResponse:
     remaining: float = 0.0
     percentage_used: float = 0.0
 
-
 @dataclass
 class BudgetListResponse:
     status: str
@@ -37,7 +33,6 @@ class BudgetListResponse:
     total_budget: float
     total_spent: float
     total_remaining: float
-
 
 @dataclass
 class BudgetSingleResponse:
