@@ -26,6 +26,9 @@ def create_app():
     from api.auth import auth_bp
     app.register_blueprint(auth_bp, url_prefix='/api/auth')
 
+    from api.category import categories_bp
+    app.register_blueprint(categories_bp, url_prefix='/api/categories')
+
     print("RUN")
 
     @app.route('/api/health', methods=['GET'])
