@@ -23,23 +23,23 @@ def create_app():
     
     CORS(app, resources={r"/api/*": {"origins": "*"}})
     
-    from api.auth import auth_bp
-    app.register_blueprint(auth_bp, url_prefix='/api/auth')
+    from auth import get_blueprint as get_auth_blueprint
+    app.register_blueprint(get_auth_blueprint(), url_prefix='/api/auth')
     
-    from api.category import categories_bp
-    app.register_blueprint(categories_bp, url_prefix='/api/categories')
+    from category import get_blueprint as get_category_blueprint
+    app.register_blueprint(get_category_blueprint(), url_prefix='/api/categories')
     
-    from budget import get_blueprint
-    app.register_blueprint(get_blueprint(), url_prefix='/api/budgets')
+    from budget import get_blueprint as get_budget_blueprint
+    app.register_blueprint(get_budget_blueprint(), url_prefix='/api/budgets')
     
-    from api.income import income_bp
-    app.register_blueprint(income_bp, url_prefix='/api/income')
+    from income import get_blueprint as get_income_blueprint
+    app.register_blueprint(get_income_blueprint(), url_prefix='/api/income')
     
-    from api.expense import expenses_bp
-    app.register_blueprint(expenses_bp, url_prefix='/api/expenses')
+    from expense import get_blueprint as get_expense_blueprint
+    app.register_blueprint(get_expense_blueprint(), url_prefix='/api/expenses')
     
-    from api.dashboard import dashboard_bp
-    app.register_blueprint(dashboard_bp, url_prefix='/api/dashboard')
+    from dashboard import get_blueprint as get_dashboard_blueprint
+    app.register_blueprint(get_dashboard_blueprint(), url_prefix='/api/dashboard')
     
     print("RUN")
     
