@@ -55,6 +55,8 @@ def login():
                 user=user,
                 token=token
             )
+            print(f"User {user.username} logged in successfully.")
+            print(f"Token: {token}")
             
             return jsonify(vars(auth_res)), HTTPStatus.OK
             

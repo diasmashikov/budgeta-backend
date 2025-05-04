@@ -21,7 +21,7 @@ def create_app():
     
     init_app(app)
     
-    CORS(app, resources={r"/api/*": {"origins": "*"}})
+    CORS(app, resources={r"/api/*": {"origins": ["*", "http://localhost:3000"]}})
     
     from auth import get_blueprint as get_auth_blueprint
     app.register_blueprint(get_auth_blueprint(), url_prefix='/api/auth')

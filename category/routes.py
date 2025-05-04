@@ -34,7 +34,7 @@ def get_category(category_id):
         'category': category
     }), HTTPStatus.OK
 
-@category_bp.route('', methods=['POST'])
+@category_bp.route('', methods=['GET', 'POST', 'OPTIONS'])
 @login_required
 def create_category():
     user_id = g.user['user_id']
