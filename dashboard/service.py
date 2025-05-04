@@ -48,16 +48,19 @@ class DashboardService:
         for expense in recent_expenses:
             expense_dict = dict(expense)
             if expense_dict['transaction_date']:
-                expense_dict['transaction_date'] = datetime.strptime(
-                    expense_dict['transaction_date'], '%Y-%m-%d').date()
+                if isinstance(expense_dict['transaction_date'], str):
+                    expense_dict['transaction_date'] = datetime.strptime(
+                        expense_dict['transaction_date'], '%Y-%m-%d').date()
             transactions.append(expense_dict)
-        
+
         for income in recent_income:
             income_dict = dict(income)
             if income_dict['transaction_date']:
-                income_dict['transaction_date'] = datetime.strptime(
-                    income_dict['transaction_date'], '%Y-%m-%d').date()
+                if isinstance(income_dict['transaction_date'], str):
+                    income_dict['transaction_date'] = datetime.strptime(
+                        income_dict['transaction_date'], '%Y-%m-%d').date()
             transactions.append(income_dict)
+
         
         # Sort by date (most recent first)
         transactions.sort(key=lambda x: x['transaction_date'] if x['transaction_date'] else date.max, reverse=True)

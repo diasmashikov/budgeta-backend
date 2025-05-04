@@ -47,6 +47,7 @@ def create_income():
     user_id = g.user['user_id']
     
     data = request.get_json()
+    print(data)
     
     if not data:
         return jsonify({

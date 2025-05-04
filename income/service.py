@@ -13,10 +13,11 @@ class IncomeService:
             processed_income = dict(income)
             
             # Convert date strings to date objects for serialization
-            if processed_income['due_date']:
+            if processed_income['due_date'] and isinstance(processed_income['due_date'], str):
                 processed_income['due_date'] = datetime.strptime(processed_income['due_date'], '%Y-%m-%d').date()
+
             
-            if processed_income['receive_date']:
+            if processed_income['receive_date'] and isinstance(processed_income['receive_date'], str):
                 processed_income['receive_date'] = datetime.strptime(processed_income['receive_date'], '%Y-%m-%d').date()
             
             processed_incomes.append(processed_income)
@@ -33,10 +34,10 @@ class IncomeService:
             return None
         
         # Convert date strings to date objects for serialization
-        if income['due_date']:
+        if income['due_date'] and isinstance(income['due_date'], str):
             income['due_date'] = datetime.strptime(income['due_date'], '%Y-%m-%d').date()
-        
-        if income['receive_date']:
+
+        if income['receive_date'] and isinstance(income['receive_date'], str):
             income['receive_date'] = datetime.strptime(income['receive_date'], '%Y-%m-%d').date()
         
         return income

@@ -12,9 +12,10 @@ class ExpenseService:
         for expense in expenses:
             processed_expense = dict(expense)
             
-            # Convert date string to date object for serialization
+            # Convert date string to date object for serialization, if necessary
             if processed_expense['date']:
-                processed_expense['date'] = datetime.strptime(processed_expense['date'], '%Y-%m-%d').date()
+                if isinstance(processed_expense['date'], str):  # Only convert if it's a string
+                    processed_expense['date'] = datetime.strptime(processed_expense['date'], '%Y-%m-%d').date()
             
             processed_expenses.append(processed_expense)
         
@@ -29,9 +30,10 @@ class ExpenseService:
         if not expense:
             return None
         
-        # Convert date string to date object for serialization
+        # Convert date string to date object for serialization, if necessary
         if expense['date']:
-            expense['date'] = datetime.strptime(expense['date'], '%Y-%m-%d').date()
+            if isinstance(expense['date'], str):  # Only convert if it's a string
+                expense['date'] = datetime.strptime(expense['date'], '%Y-%m-%d').date()
         
         return expense
     
@@ -120,8 +122,9 @@ class ExpenseService:
         if not expense:
             return False
         
+        print(expense)
         # Store date for savings update
-        expense_date = datetime.strptime(expense['date'], '%Y-%m-%d').date()
+        expense_date = expense['date']
         
         # Delete expense
         success = self.repository.delete_expense(user_id, expense_id)
@@ -140,7 +143,8 @@ class ExpenseService:
         
         for expense in expenses:
             if expense['date']:
-                expense['date'] = datetime.strptime(expense['date'], '%Y-%m-%d').date()
+                if isinstance(expense['date'], str):  # Only convert if it's a string
+                    expense['date'] = datetime.strptime(expense['date'], '%Y-%m-%d').date()
         
         return expenses
     

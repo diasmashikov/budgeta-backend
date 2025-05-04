@@ -149,6 +149,7 @@ def delete_expense(expense_id):
     user_id = g.user['user_id']
     
     try:
+        print(f"Attempting to delete expense {expense_id} for user {user_id}")
         success = expense_service.delete_expense(user_id, expense_id)
         
         if not success:
@@ -163,6 +164,7 @@ def delete_expense(expense_id):
         })
         
     except Exception as e:
+        print(f"Error deleting expense {expense_id}: {str(e)}")
         return jsonify({
             'status': 'error',
             'message': str(e)
